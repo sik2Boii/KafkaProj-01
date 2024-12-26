@@ -1,4 +1,4 @@
-package kafka;
+package com.example.kafka;
 
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
