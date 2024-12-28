@@ -23,6 +23,10 @@ public class ConsumerWakeup {
         props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "group-01");
+        // 동일한 컨슈머 그룹으로 접속 시 기존에 저장된 offset 정보를 사용.
+        // 만약 offset 정보가 없거나 만료된 경우, "earliest" 설정에 따라 가장 처음부터 메시지를 읽기 시작함.
+        // 오프셋 정보의 기본 유지 기간은 7일이며, 이는 offsets.retention.minutes 설정에 의해 관리됨.
+        props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<String, String>(props);
         kafkaConsumer.subscribe(List.of(topicName));
