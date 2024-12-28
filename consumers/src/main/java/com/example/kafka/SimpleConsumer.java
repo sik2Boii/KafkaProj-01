@@ -23,7 +23,10 @@ public class SimpleConsumer {
         props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.56.101:9092");
         props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "group1_01");
+        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, "simple-group");
+//        props.setProperty(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, "5000"); // consumer의 heartbeat를 5초마다 브로커에 전송
+//        props.setProperty(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "90000"); // 브로커가 consumer로부터 응답을 받지 못할 경우, consumer를 비활성 상태로 간주하는 최대 시간
+//        props.setProperty(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, "600000"); // poll() 호출 사이의 최대 대기 시간
 
         KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<String, String>(props);
         // 지정된 토픽을 구독
