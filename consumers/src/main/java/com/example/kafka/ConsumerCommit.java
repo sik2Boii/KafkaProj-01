@@ -2,12 +2,16 @@ package com.example.kafka;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.kafka.clients.consumer.CommitFailedException;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.clients.consumer.OffsetCommitCallback;
+import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
@@ -50,9 +54,49 @@ public class ConsumerCommit {
         });
 
 //        pollAutoCommit(kafkaConsumer);
+//        pollCommitSync(kafkaConsumer);
+        pollCommitAsync(kafkaConsumer);
+    }
 
-        pollCommitSync(kafkaConsumer);
+    private static void pollCommitAsync(KafkaConsumer<String, String> kafkaConsumer) {
 
+        int loopCnt = 0;
+
+        try {
+            while (true) {
+                ConsumerRecords<String, String> consumerRecords = kafkaConsumer.poll(Duration.ofMillis(1000));
+                logger.info(" ##### loopCnt: {}, consumerRecords: {} #####", loopCnt++, consumerRecords.count());
+
+                for (ConsumerRecord record : consumerRecords) {
+                    logger.info("record key: {},  partition: {}, record offset: {} record value: {}", record.key(), record.partition(), record.offset(), record.value());
+                }
+
+                // 오프셋을 비동기적으로 커밋하고, 커밋 결과를 콜백으로 처리
+                // 비동기 커밋을 사용하면 성능이 향상되지만, 커밋 실패 시 이를 처리할 필요가 있음
+                kafkaConsumer.commitAsync(new OffsetCommitCallback() {
+                    @Override
+                    public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception exception) {
+                        if (exception != null) {
+                            logger.error("offsets {} is not completed, error: {}", offsets, exception);
+                        }
+                    }
+                });
+            }
+        } catch (WakeupException e) {
+            logger.error("wakeup exception has been called");
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        } finally {
+            try {
+                // 프로그램 종료 시, 아직 커밋되지 않은 오프셋을 동기적으로 커밋하여 데이터 일관성 보장
+                kafkaConsumer.commitSync();
+            } catch (CommitFailedException e) {
+                logger.error("Final commit failed: {}", e.getMessage());
+            } finally {
+                logger.info("finally consumer is closing");
+                kafkaConsumer.close();
+            }
+        }
     }
 
     private static void pollCommitSync(KafkaConsumer<String, String> kafkaConsumer) {
