@@ -92,8 +92,10 @@ public class PizzaProducer {
         String topicName = "pizza-topic-p3r3";
 
         Properties props  = new Properties();
+        // 여러 브로커를 쉼표로 구분하여 지정
         props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.56.101:9092, 192.168.56.101:9093, 192.168.56.101:9094");
-//        props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.56.101:9092"); // 위와 같이 작동함, 다만 브로커가 죽으면 작동안함
+        // 이 설정은 하나의 브로커만 지정하므로, 해당 브로커가 다운되면 프로듀서가 클러스터에 연결할 수 없어 메시지 전송이 중단됩니다.
+//        props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.56.101:9092");
         props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 
