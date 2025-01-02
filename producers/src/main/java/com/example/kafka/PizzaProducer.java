@@ -89,7 +89,7 @@ public class PizzaProducer {
 
     public static void main(String[] args) {
 
-        String topicName = "pizza-topic";
+        String topicName = "pizza-topic-stest";
 
         Properties props  = new Properties();
         // 여러 브로커를 쉼표로 구분하여 지정
@@ -102,7 +102,7 @@ public class PizzaProducer {
         //KafkaProducer object creation
         KafkaProducer<String, String> kafkaProducer = new KafkaProducer<String, String>(props);
 
-        sendPizzaMessage(kafkaProducer, topicName, -1, 1000, 0, 0, true);
+        sendPizzaMessage(kafkaProducer, topicName, -1, 500, 0, 0, false);
 
         kafkaProducer.close();
     }
