@@ -1,6 +1,5 @@
 package com.practice.kafka.producer;
 
-import com.practice.kafka.consumer.OrderDTO;
 import com.practice.kafka.model.OrderModel;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -8,11 +7,9 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
-import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +31,7 @@ public class OrderSerdeProducer {
         KafkaProducer<String, OrderModel> kafkaProducer = new KafkaProducer<String, OrderModel>(props);
 
         sendFileMessages(kafkaProducer, topicName, filePath);
-        
+
         kafkaProducer.close();
     }
 
